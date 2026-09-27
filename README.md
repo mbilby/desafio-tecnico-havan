@@ -407,3 +407,81 @@ não bloquear a execução enquanto uma operação está sendo aguardada.
 ```
 Paralelismo significa executar trabalhos simultaneamente, normalmente utilizando múltiplas threads ou núcleos do processador.
 
+# Parte 2 questão prática
+
+## 🧠 Questão 2: Validador de Sequências e Agrupamento
+
+## 📌 Descrição
+
+# Questão 2 - Maior Sequência de Números Inteiros Consecutivos
+
+## 📌 Descrição
+
+Esta aplicação foi desenvolvida em **C#/.NET** para resolver o seguinte problema:
+
+> Dada uma lista de números inteiros desordenados, encontrar e retornar a maior sequência de números inteiros consecutivos presentes na lista.
+
+### Exemplo
+
+Entrada:
+
+```text
+[100, 4, 200, 1, 3, 2]
+```
+Saída esperada:
+```text
+[1, 2, 3, 4]
+```
+Tamanho da sequência:
+```text
+4
+```
+### 🧠 Estratégia utilizada
+A solução utiliza a estrutura:
+```text
+HashSet<int>
+```
+O HashSet permite verificar rapidamente se determinado número existe na coleção.
+A ideia principal é identificar apenas os números que podem representar o início de uma sequência.
+Para cada número n, verificamos se existe:
+```text
+n - 1
+```
+Se n - 1 não existir, significa que n pode ser o início de uma sequência.
+A partir dele, buscamos:
+```text
+n + 1
+n + 2
+n + 3
+...
+```
+até que o próximo número não seja encontrado.
+
+## ⚙️ Complexidade
+A abordagem com HashSet apresenta complexidade média de:
+```text
+O(n)
+
+##  🔎 Considerações
+
+A utilização de HashSet<int> também evita problemas com números duplicados.
+
+Por exemplo:
+```text
+[1, 2, 2, 3, 4]
+```
+é tratado internamente como:
+```text
+[1, 2, 3, 4]
+```
+e o resultado permanece:
+```text
+[1, 2, 3, 4]
+```
+## 🛠️ Tecnologias utilizadas
+
+- C#
+- .NET
+- Collections
+- List<int>
+- HashSet<int>
