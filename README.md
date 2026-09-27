@@ -25,7 +25,7 @@ Como parte da proposta do desafio, o histórico de desenvolvimento é mantido po
 
 ---
 
-### ❓ Pergunta 1
+## ❓ Pergunta 1
 
 **Qual é a diferença fundamental entre Classes (Value Types vs Reference Types) em C# e como isso afeta o uso de memória (Stack vs Heap)?**
 
@@ -143,7 +143,8 @@ De maneira simplificada, uma variável local como idade pode fazer parte da estr
 new Pessoa()
 ```
 fica normalmente no Managed Heap.
-### ❓ Pergunta 2
+
+## ❓ Pergunta 2
 
 **Explique a diferença entre usar `Interface` e `Classe Abstrata`. Dê um exemplo prático de quando escolheria uma em detrimento da outra.**
 
@@ -241,3 +242,168 @@ Já escolheria uma **classe abstrata** quando existe uma relação clara de **�
 Por exemplo, `FuncionarioCLT` e `FuncionarioPJ` são tipos de `Funcionario` e podem compartilhar propriedades como `Nome` e `Documento`, além de comportamentos comuns, enquanto cada um implementa sua própria regra de cálculo de salário.
 
 > **Obs. Interface define um contrato de comportamento e é ideal para baixo acoplamento e múltiplas implementações. Classe abstrata representa uma base comum entre classes relacionadas e permite compartilhar estado e implementação.**
+
+## ❓ Pergunta 3
+
+**O que é e para que serve o operador ‘async/await’? O que acontece na prática quando uma thread do .NET executa uma operação assíncrona?.**
+
+### ✅ Resposta
+
+```text
+async e await são recursos do C# usados para trabalhar com operações assíncronas, ou seja, operações que podem levar algum tempo para terminar sem precisar bloquear a thread enquanto aguardam.
+```
+### O que é async?
+
+```text
+A palavra-chave async indica que um método pode executar operações assíncronas e normalmente retornar um Task ou Task<T>.
+```
+```csharp
+public async Task<string> BuscarDadosAsync()
+{
+    return "Dados carregados";
+}
+```
+### O que é await?
+```textx
+O await é usado para aguardar a conclusão de uma operação assíncrona.são recursos do C# utilizados para implementar operações assíncronas sem bloquear desnecessariamente a thread em execução. O async indica que um método pode possuir operações assíncronas e normalmente retornar um Task ou Task<T>, enquanto o await aguarda a conclusão de uma dessas operações.
+```
+Exemplo:
+
+```csharp
+public async Task<string> BuscarDadosAsync()
+{
+    string resultado = await httpClient.GetStringAsync("https://exemplo.com");
+
+    return resultado;
+}
+```
+O ponto importante é que **await** não significa simplesmente **"parar tudo e esperar"**.
+Quando a execução chega aqui:
+```csharp
+await httpClient.GetStringAsync(...);
+```
+e a operação ainda não terminou, o método é temporariamente suspenso.
+De forma simplificada:
+
+```text
+Thread executando método
+        │
+        ▼
+Inicia requisição HTTP
+        │
+        ▼
+      await
+        │
+        ├── Operação ainda não terminou
+        │
+        └── Thread é liberada para executar outro trabalho
+```
+### Vamos de prática
+
+```csharp
+public async Task ProcessarAsync()
+{
+    Console.WriteLine("Início");
+
+    await Task.Delay(3000);
+
+    Console.WriteLine("Fim");
+}
+```
+Ao chegar em:
+```csharp
+await Task.Delay(3000);
+```
+a thread não precisa ficar ocupada durante os três segundos.
+Ela pode ser utilizada por outras tarefas.
+
+Depois que o **Task.Delay** é concluído, a execução continua em:
+```csharp
+Console.WriteLine("Fim");
+```
+### O que acontece na prática no .NET?
+
+Quando um método é marcado como async, o compilador transforma esse método internamente em uma estrutura semelhante a uma máquina de estados (state machine). quando a execução encontra um await cuja operação ainda não foi concluída, o método salva seu estado e pode liberar a thread para executar outros trabalhos. Quando a operação termina, a continuação do método é agendada e a execução prossegue a partir do ponto após o await. O compilador implementa esse comportamento utilizando uma máquina de estados.
+
+Considere:
+```csharp
+public async Task ExecutarAsync()
+{
+    Console.WriteLine("A");
+
+    await BuscarDadosAsync();
+
+    Console.WriteLine("B");
+}
+```
+```text
+Estado 0
+Executar Console.WriteLine("A")
+
+        ↓
+
+Iniciar BuscarDadosAsync()
+
+        ↓
+
+Operação terminou?
+      /        \
+    SIM        NÃO
+     │          │
+     │          └── salva o estado atual
+     │              e libera a thread
+     │
+     ▼
+Continuar execução
+
+        ↓
+
+Console.WriteLine("B")
+```
+Quando BuscarDadosAsync() termina, o runtime pode continuar o método a partir daquele ponto.
+
+### Isso cria uma nova thread?
+
+Não necessariamente.
+Esse é um ponto importante.
+
+```csharp
+await httpClient.GetAsync(...)
+```
+não significa:
+```text
+Criar uma nova thread
+```
+Operações de I/O, como:
+- acesso HTTP;
+- acesso a banco de dados;
+- leitura de arquivos;
+- chamadas de rede;
+podem ser executadas de forma assíncrona sem manter uma thread bloqueada esperando pelo resultado.
+Por isso async/await é especialmente útil em aplicações Web.
+
+Imagine uma API:
+
+```csharp
+[HttpGet]
+public async Task<IActionResult> BuscarCliente()
+{
+    var cliente = await repository.BuscarClienteAsync();
+
+    return Ok(cliente);
+}
+```
+Enquanto o banco está processando a consulta, a thread que estava atendendo aquela requisição pode ser liberada para atender outra requisição.
+Isso ajuda a aplicação a ter melhor **escalabilidade**.
+
+### async/await não significa paralelismo
+É importante separar os conceitos:
+```text
+Assíncrono ≠ Paralelo
+```
+Assíncrono significa principalmente:
+```text
+não bloquear a execução enquanto uma operação está sendo aguardada.
+```
+Paralelismo significa executar trabalhos simultaneamente, normalmente utilizando múltiplas threads ou núcleos do processador.
+
