@@ -407,7 +407,7 @@ não bloquear a execução enquanto uma operação está sendo aguardada.
 ```
 Paralelismo significa executar trabalhos simultaneamente, normalmente utilizando múltiplas threads ou núcleos do processador.
 
-# Parte 2 questão prática
+# Parte 2: Questão Prática
 
 ## 🧠 Questão 2: Validador de Sequências e Agrupamento
 
