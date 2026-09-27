@@ -481,3 +481,139 @@ e o resultado permanece:
 - Collections
 - List<int>
 - HashSet<int>
+
+### Questão 3 : 🧠 Análise de Caracteres em C#
+
+## 📌 Descrição do Projeto
+
+Este projeto desenvolvida desenvolvida em **C# / .NET** para realizar a análise de caracteres de uma frase informada pelo usuário.
+
+A aplicação recebe uma `string` como entrada, realiza a higienização e normalização do texto e, em seguida, executa análises de frequência dos caracteres.
+
+O processamento contempla a remoção de espaços, pontuações, caracteres especiais e acentuações, além da conversão de todas as letras para minúsculas.
+
+Após a normalização, o sistema identifica:
+
+- O primeiro caractere que aparece apenas uma vez no texto;
+- Os três caracteres com maior número de ocorrências;
+- A quantidade exata de vezes que cada um desses caracteres aparece.
+
+A solução foi estruturada separando a lógica de negócio da execução principal da aplicação, facilitando a leitura, manutenção e evolução do código.
+
+## Funcionalidades
+
+A aplicação realiza:
+
+- Higienização do texto;
+- Remoção de espaços, pontuações e caracteres especiais;
+- Conversão para letras minúsculas;
+- Remoção de acentuação;
+- Identificação do primeiro caractere não repetido;
+- Identificação dos 3 caracteres mais frequentes.
+
+## Exemplo
+
+### Entrada
+
+```text
+A Bateria do computador está Fraca!
+```
+
+### Texto higienizado
+
+```text
+abateriadocomputadorestafraca
+```
+
+### Saída
+
+```text
+Primeiro caractere não repetido: 'b'
+
+Top 3 caracteres mais frequentes:
+Letra 'a': 7 vezes
+Letra 't': 3 vezes
+Letra 'r': 3 vezes
+
+> **Observação:** o exemplo disponibilizado no enunciado apresenta divergências na contagem de alguns caracteres.  
+> A implementação segue as regras descritas e realiza a contagem diretamente sobre o texto higienizado.
+
+## Estrutura do Projeto
+
+```text
+questao_3/
+│
+├── Program.cs
+├── AnaliseTextoService.cs
+├── questao_3.csproj
+└── README.md
+```
+
+### `Program.cs`
+
+Responsável por:
+
+- Receber a frase informada pelo usuário;
+- Chamar os métodos de análise;
+- Exibir os resultados no console.
+
+### `AnaliseTextoService.cs`
+
+Responsável pelas regras de negócio da aplicação.
+
+Principais métodos:
+
+- `HigienizarTexto`
+- `ContarCaracteres`
+- `EncontrarPrimeiroNaoRepetido`
+- `ObterTop3Caracteres`
+- `RemoverAcentos`
+
+## Estruturas Utilizadas
+
+Para armazenar a frequência dos caracteres foi utilizado:
+
+```csharp
+Dictionary<char, int>
+```
+
+Exemplo:
+
+```text
+a -> 7
+b -> 1
+t -> 3
+r -> 3
+```
+
+## ⚙️ Complexidade
+
+A higienização e a contagem dos caracteres percorrem o texto de forma linear.
+
+Considerando `n` como a quantidade de caracteres da frase:
+
+```text
+O(n)
+```
+
+A busca pelo primeiro caractere não repetido também possui complexidade:
+
+```text
+O(n)
+```
+
+A ordenação utilizada para encontrar os caracteres mais frequentes depende da quantidade `k` de caracteres distintos:
+
+```text
+O(k log k)
+```
+
+## 🛠️ Tecnologias Utilizadas
+
+- C#
+- .NET
+- Dictionary
+- List
+- StringBuilder
+- System.Globalization
+- Unicode Normalization
