@@ -25,7 +25,7 @@ Como parte da proposta do desafio, o histórico de desenvolvimento é mantido po
 
 ---
 
-## ❓ Pergunta 1
+### ❓ Pergunta 1
 
 **Qual é a diferença fundamental entre Classes (Value Types vs Reference Types) em C# e como isso afeta o uso de memória (Stack vs Heap)?**
 
@@ -144,7 +144,7 @@ new Pessoa()
 ```
 fica normalmente no Managed Heap.
 
-## ❓ Pergunta 2
+### ❓ Pergunta 2
 
 **Explique a diferença entre usar `Interface` e `Classe Abstrata`. Dê um exemplo prático de quando escolheria uma em detrimento da outra.**
 
@@ -211,6 +211,7 @@ public class FuncionarioCLT : Funcionario
         return SalarioMensal;
     }
 }
+```
 
 ### Pontos importantes
 
@@ -243,7 +244,7 @@ Por exemplo, `FuncionarioCLT` e `FuncionarioPJ` são tipos de `Funcionario` e po
 
 > **Obs. Interface define um contrato de comportamento e é ideal para baixo acoplamento e múltiplas implementações. Classe abstrata representa uma base comum entre classes relacionadas e permite compartilhar estado e implementação.**
 
-## ❓ Pergunta 3
+### ❓ Pergunta 3
 
 **O que é e para que serve o operador ‘async/await’? O que acontece na prática quando uma thread do .NET executa uma operação assíncrona?.**
 
@@ -411,7 +412,7 @@ Paralelismo significa executar trabalhos simultaneamente, normalmente utilizando
 
 ## 🧠 Questão 2: Validador de Sequências e Agrupamento
 
-## 📌 Descrição
+### 📌 Descrição
 
 Esta aplicação foi desenvolvida em **C#/.NET** para resolver o seguinte problema:
 
@@ -453,12 +454,13 @@ n + 3
 ```
 até que o próximo número não seja encontrado.
 
-## ⚙️ Complexidade
+### ⚙️ Complexidade
 A abordagem com HashSet apresenta complexidade média de:
 ```text
 O(n)
+```
 
-##  🔎 Considerações
+###  🔎 Considerações
 
 A utilização de HashSet<int> também evita problemas com números duplicados.
 
@@ -474,7 +476,7 @@ e o resultado permanece:
 ```text
 [1, 2, 3, 4]
 ```
-## 🛠️ Tecnologias utilizadas
+### 🛠️ Tecnologias utilizadas
 
 ```text
 - C#
@@ -484,9 +486,9 @@ e o resultado permanece:
 - HashSet<int>
 ```
 
-### Questão 3 : 🧠 Análise de Caracteres em C#
+## Questão 3 : 🧠 Análise de String e Frequência
 
-## 📌 Descrição do Projeto
+### 📌 Descrição do Projeto
 
 Este projeto desenvolvida desenvolvida em **C# / .NET** para realizar a análise de caracteres de uma frase informada pelo usuário.
 
@@ -502,7 +504,7 @@ Após a normalização, o sistema identifica:
 
 A solução foi estruturada separando a lógica de negócio da execução principal da aplicação, facilitando a leitura, manutenção e evolução do código.
 
-## Funcionalidades
+### Funcionalidades
 
 A aplicação realiza:
 
@@ -513,7 +515,7 @@ A aplicação realiza:
 - Identificação do primeiro caractere não repetido;
 - Identificação dos 3 caracteres mais frequentes.
 
-## Exemplo
+### Exemplo
 
 ### Entrada
 
@@ -536,11 +538,12 @@ Top 3 caracteres mais frequentes:
 Letra 'a': 7 vezes
 Letra 't': 3 vezes
 Letra 'r': 3 vezes
+```
 
 > **Observação:** o exemplo disponibilizado no enunciado apresenta divergências na contagem de alguns caracteres.  
 > A implementação segue as regras descritas e realiza a contagem diretamente sobre o texto higienizado.
 
-## Estrutura do Projeto
+### Estrutura do Projeto
 
 ```text
 questao_3/
@@ -571,7 +574,7 @@ Principais métodos:
 - `ObterTop3Caracteres`
 - `RemoverAcentos`
 
-## Estruturas Utilizadas
+### Estruturas Utilizadas
 
 Para armazenar a frequência dos caracteres foi utilizado:
 
@@ -588,7 +591,7 @@ t -> 3
 r -> 3
 ```
 
-## ⚙️ Complexidade
+### ⚙️ Complexidade
 
 A higienização e a contagem dos caracteres percorrem o texto de forma linear.
 
@@ -610,7 +613,7 @@ A ordenação utilizada para encontrar os caracteres mais frequentes depende da 
 O(k log k)
 ```
 
-## 🛠️ Tecnologias Utilizadas
+### 🛠️ Tecnologias Utilizadas
 ```text
 - C#
 - .NET
@@ -619,4 +622,74 @@ O(k log k)
 - StringBuilder
 - System.Globalization
 - Unicode Normalization
+```
+## Questão 4 : 🧠 Processamento Financeiro e Regra de Negócio
+
+### 📌 Descrição do Projeto
+
+Este projeto consiste em calcular o valor final de uma fatura de acordo com a data em que o pagamento foi realizado.
+
+A aplicação considera uma fatura com valor base de **R$ 1.000,00** e vencimento em **10/10/2026**, aplicando regras específicas de desconto, multa e juros conforme a data de pagamento.
+
+O objetivo da solução é demonstrar a implementação de regras de negócio, manipulação de datas, cálculos financeiros e organização do código em responsabilidades separadas.
+
+### Regras de Negócio
+
+Quando o pagamento é realizado antes da data de vencimento:
+
+- É aplicado desconto de **1% por dia de antecipação**;
+- O desconto máximo permitido é de **10%**.
+
+Exemplo:
+
+```text
+Pagamento: 05/10/2026
+Vencimento: 10/10/2026
+
+Dias de antecipação: 5
+Desconto: 5%
+Valor do desconto: R$ 50,00
+Valor final: R$ 950,00
+```
+### Pagamento no vencimento
+
+Quando o pagamento é realizado exatamente na data de vencimento:
+
+- Não existe desconto;
+- Não existe multa;
+- Não existem juros.
+
+```text
+Pagamento: 10/10/2026
+Valor final: R$ 1.000,00
+```
+
+### Pagamento em atraso
+
+Quando o pagamento é realizado após a data de vencimento:
+
+- É aplicada uma multa fixa de **2%**;
+- São aplicados juros simples de **0,5% por dia de atraso**.
+
+Exemplo:
+
+```text
+Pagamento: 13/10/2026
+Vencimento: 10/10/2026
+
+Dias de atraso: 3
+Multa: R$ 20,00
+Juros: R$ 15,00
+Valor final: R$ 1.035,00
+```
+## Tecnologias e Recursos Utilizados
+```text
+- C#
+- .NET
+- `DateTime`
+- `decimal`
+- `DateTime.TryParseExact`
+- Classes estáticas
+- Namespaces
+- Separação de responsabilidades
 ```
