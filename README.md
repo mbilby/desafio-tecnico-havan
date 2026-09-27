@@ -476,11 +476,13 @@ e o resultado permanece:
 ```
 ## 🛠️ Tecnologias utilizadas
 
+```text
 - C#
 - .NET
 - Collections
 - List<int>
 - HashSet<int>
+```
 
 ### Questão 3 : 🧠 Análise de Caracteres em C#
 
@@ -609,7 +611,7 @@ O(k log k)
 ```
 
 ## 🛠️ Tecnologias Utilizadas
-
+```text
 - C#
 - .NET
 - Dictionary
@@ -617,3 +619,4 @@ O(k log k)
 - StringBuilder
 - System.Globalization
 - Unicode Normalization
+```
