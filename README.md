@@ -413,10 +413,6 @@ Paralelismo significa executar trabalhos simultaneamente, normalmente utilizando
 
 ## 📌 Descrição
 
-# Questão 2 - Maior Sequência de Números Inteiros Consecutivos
-
-## 📌 Descrição
-
 Esta aplicação foi desenvolvida em **C#/.NET** para resolver o seguinte problema:
 
 > Dada uma lista de números inteiros desordenados, encontrar e retornar a maior sequência de números inteiros consecutivos presentes na lista.
