@@ -693,3 +693,186 @@ Valor final: R$ 1.035,00
 - Namespaces
 - Separação de responsabilidades
 ```
+## Questão 5 : 🧠 Mini-API / Console App de Gerenciamento de Tarefas (To-Do List)
+
+### 📌 Descrição do Projeto
+
+Esta aplicação foi desenvolvida com objetivo de realizar o gerenciamento de tarefas pessoais.
+
+A API permite cadastrar tarefas, consultar tarefas, atualizar o status, listar tarefas ativas e filtrar tarefas concluídas por período.
+
+A solução foi organizada em camadas para separar responsabilidades entre domínio, regras de negócio, persistência em memória e exposição dos endpoints HTTP.
+
+## Funcionalidades
+
+A aplicação permite:
+
+- Cadastrar uma nova tarefa;
+- Consultar uma tarefa por `Id`;
+- Listar todas as tarefas;
+- Listar apenas tarefas ativas;
+- Atualizar o status de uma tarefa;
+- Concluir uma tarefa com preenchimento automático da data de conclusão;
+- Filtrar tarefas concluídas por intervalo de datas;
+- Validar regras de negócio;
+- Retornar mensagens adequadas em casos de erro.
+
+### Cadastro de Tarefa
+
+Uma tarefa possui:
+
+- `Id`;
+- `Titulo`;
+- `Descricao`;
+- `DataDeCriacao`;
+- `DataDeConclusao`;
+- `Status`.
+
+O `Id` é gerado automaticamente utilizando:
+
+```csharp
+Guid.NewGuid()
+```
+
+A data de criação também é preenchida automaticamente:
+
+```csharp
+DateTime.Now
+```
+
+Toda nova tarefa é criada inicialmente com status:
+
+```text
+Pendente
+```
+
+A `DataDeConclusao` permanece nula enquanto a tarefa não for concluída.
+
+### Validação do Título
+
+O título:
+
+- Não pode ser vazio;
+- Não pode conter apenas espaços;
+- Deve possuir no mínimo 5 caracteres.
+
+Exemplos:
+
+```text
+"ABC"       -> inválido
+"    "      -> inválido
+"Teste"     -> válido
+"Estudar C#" -> válido
+```
+
+### Status da Tarefa
+
+Os status disponíveis são:
+
+```text
+Pendente
+EmAndamento
+Concluida
+```
+
+Internamente, são representados por um `enum`:
+
+```csharp
+public enum StatusTarefa
+{
+    Pendente = 1,
+    EmAndamento = 2,
+    Concluida = 3
+}
+```
+
+A API está configurada para representar o status no JSON através do nome:
+
+```json
+{
+  "status": "EmAndamento"
+}
+```
+
+### Conclusão da Tarefa
+
+Quando o status for alterado para:
+
+```text
+Concluida
+```
+
+a aplicação preenche automaticamente:
+
+```csharp
+DataDeConclusao = DateTime.Now;
+```
+
+Uma tarefa já concluída não pode ter seu status alterado novamente.
+
+### Tarefas Ativas
+
+São consideradas tarefas ativas:
+
+```text
+Pendente
+EmAndamento
+```
+
+Tarefas com status `Concluida` não são retornadas na consulta de tarefas ativas.
+
+### Filtro de Tarefas Concluídas
+
+É possível consultar tarefas concluídas dentro de um intervalo de datas.
+
+A aplicação valida que:
+
+```text
+dataInicio <= dataFim
+```
+
+Caso contrário, retorna uma mensagem de erro.
+
+## Arquitetura
+
+A aplicação segue uma separação de responsabilidades:
+
+```text
+HTTP Request
+     ↓
+Controller
+     ↓
+Service
+     ↓
+Repository
+     ↓
+Persistência In-Memory
+```
+## Tecnologias Utilizadas
+```text
+- C#
+- .NET 10
+- ASP.NET Core Web API
+- Swagger / OpenAPI
+- Dependency Injection
+- Repository Pattern
+- Service Layer
+- DTOs
+- Enums
+- Persistence In-Memory
+- REST
+```
+## Observações
+
+A aplicação utiliza persistência em memória, conforme permitido pelo requisito do desafio.
+
+Por esse motivo, os dados não são armazenados permanentemente. Ao encerrar ou reiniciar a aplicação, as tarefas cadastradas são removidas.
+
+A estrutura foi desenvolvida priorizando:
+
+- Separação de responsabilidades;
+- Organização em camadas;
+- Legibilidade;
+- Manutenção;
+- Validação de regras de negócio;
+- Clareza dos retornos da API.
