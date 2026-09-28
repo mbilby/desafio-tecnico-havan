@@ -1,4 +1,4 @@
-namespace Contabilidade
+namespace Questao4.Constantes
 {
     public static class PagamentoConstante
     {

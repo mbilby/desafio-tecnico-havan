@@ -1,4 +1,4 @@
-namespace Contabilidade
+namespace Questao4.Model
 {
     public class ResultadoPagamento
     {

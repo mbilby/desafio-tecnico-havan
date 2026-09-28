@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using DesafioTecnico;
+using Questao2.Services;
 
-namespace DesafioTecnico
+namespace Questao2
 {
     public class Program
     {

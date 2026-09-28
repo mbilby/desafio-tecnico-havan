@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DesafioTecnico
+namespace Questao2.Services
 {
     public static class SequencialService
     {

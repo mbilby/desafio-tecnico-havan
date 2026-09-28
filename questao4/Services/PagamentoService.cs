@@ -1,4 +1,7 @@
-namespace Contabilidade
+using Questao4.Model;
+using Questao4.Constantes;
+
+namespace Questao4.Services
 {
     public static class PagamentoService
     {
