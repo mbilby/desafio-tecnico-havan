@@ -876,3 +876,827 @@ A estrutura foi desenvolvida priorizando:
 - Manutenção;
 - Validação de regras de negócio;
 - Clareza dos retornos da API.
+
+## Questão Bonus : 🧠 Interface Web em React (Frontend Integration)
+
+## Descrição do Projeto
+
+Este projeto corresponde ao frontend da aplicação de gerenciamento de tarefas desenvolvida como questão bônus do desafio técnico.
+
+A aplicação foi construída utilizando **React com TypeScript** e consome a Web API desenvolvida em **C# / ASP.NET Core**.
+
+O objetivo principal é permitir a criação, visualização e atualização do status das tarefas através de uma interface web simples, responsiva e integrada ao backend.
+
+## Funcionalidades
+
+A aplicação permite:
+
+- Cadastrar novas tarefas;
+- Informar título e descrição;
+- Exibir mensagens de validação retornadas pelo backend;
+- Listar as tarefas cadastradas;
+- Exibir visualmente o status atual da tarefa;
+- Avançar o status de uma tarefa;
+- Atualizar automaticamente a listagem após cadastro ou alteração;
+- Exibir data de criação;
+- Exibir data de conclusão quando disponível.
+
+## Status das Tarefas
+
+Os status disponíveis são:
+
+```text
+Pendente
+EmAndamento
+Concluida
+```
+O fluxo de atualização utilizado na interface é:
+
+```text
+Pendente
+   ↓
+EmAndamento
+   ↓
+Concluida
+```
+Quando uma tarefa está concluída, não é exibida uma nova ação para alteração de status.
+
+## Tecnologias Utilizadas
+
+- React
+- TypeScript
+- Vite
+- Fetch API
+- HTML
+- CSS
+- ESLint
+
+## Observações
+
+O foco desta implementação é demonstrar:
+
+- Integração entre React e ASP.NET Core;
+- Consumo de API REST;
+- Uso de TypeScript;
+- Gerenciamento de estado;
+- Uso de `useState`;
+- Uso de `useEffect`;
+- Tratamento de erros;
+- Componentização;
+- Atualização dinâmica da interface.
+
+Não foi utilizado um framework visual complexo, pois o foco principal do bônus é a integração frontend/backend e o funcionamento das regras da aplicação.
+
+# Parte 4: Defesa da Solução
+
+## 1. Decisão de Arquitetura
+
+### Como a Questão 5 foi organizada
+
+Na Questão 5, optei por desenvolver uma **ASP.NET Core Web API** com separação de responsabilidades em camadas.
+
+A estrutura principal foi organizada em:
+
+```text
+Questao5/
+│
+├── Constants/
+├── Controllers/
+├── Domain/
+│   ├── Entities/
+│   └── Enums/
+├── DTOs/
+├── Repositories/
+├── Services/
+└── Program.cs
+```
+
+Cada camada possui uma responsabilidade específica.
+
+### Domain
+
+A camada `Domain` contém os elementos centrais da aplicação.
+
+A entidade `Tarefa` representa uma tarefa do sistema e possui propriedades como:
+
+```text
+Id
+Titulo
+Descricao
+DataDeCriacao
+DataDeConclusao
+Status
+```
+
+O status da tarefa foi representado utilizando um `enum`:
+
+```csharp
+public enum StatusTarefa
+{
+    Pendente = 1,
+    EmAndamento = 2,
+    Concluida = 3
+}
+```
+
+Essa abordagem evita trabalhar com valores de status livres em formato de `string` e reduz a possibilidade de estados inválidos.
+
+### DTOs
+
+Os DTOs foram utilizados para representar os dados recebidos pela API.
+
+Por exemplo, no cadastro de uma tarefa, o cliente informa apenas:
+
+```text
+Titulo
+Descricao
+```
+
+Dados como:
+
+```text
+Id
+DataDeCriacao
+DataDeConclusao
+Status
+```
+
+são controlados pela própria aplicação.
+
+Essa decisão evita que o consumidor da API informe valores que devem ser definidos pela regra de negócio.
+
+### Controllers
+
+A camada de `Controllers` é responsável pela comunicação HTTP.
+
+Sua função é:
+
+```text
+Receber a requisição
+        ↓
+Encaminhar para o Service
+        ↓
+Receber o resultado
+        ↓
+Retornar a resposta HTTP
+```
+
+Procurei evitar colocar regras de negócio diretamente no Controller.
+
+### Services
+
+A camada `Services` concentra as regras de negócio da aplicação.
+
+Entre elas:
+
+- validação do título;
+- criação da tarefa;
+- alteração de status;
+- preenchimento automático da data de conclusão;
+- impedimento de alteração de uma tarefa já concluída;
+- validação do intervalo de datas.
+
+Dessa forma, as regras ficam centralizadas e podem ser reutilizadas independentemente da forma como a aplicação é consumida.
+
+### Repositories
+
+A camada `Repositories` ficou responsável pelo armazenamento e recuperação das tarefas.
+
+Como o requisito permitia persistência In-Memory, foi utilizada uma:
+
+```csharp
+List<Tarefa>
+```
+
+para armazenar os dados durante a execução da aplicação.
+
+Também foi criada uma interface:
+
+```csharp
+ITarefaRepository
+```
+
+para reduzir o acoplamento entre o `Service` e a implementação concreta do repositório.
+
+### Constants
+
+Foi criada uma camada separada para constantes utilizadas pelas regras da aplicação.
+
+Exemplos:
+
+```text
+Tamanho mínimo do título
+Mensagens de erro
+Mensagens de validação
+```
+
+Essa abordagem evita valores e mensagens espalhados pelo código.
+
+### Por que escolhi essa estrutura?
+
+Escolhi essa estrutura porque ela permite uma melhor **separação de responsabilidades** e reduz o acoplamento entre as partes da aplicação.
+
+O fluxo principal ficou:
+
+```text
+HTTP Request
+     ↓
+Controller
+     ↓
+Service
+     ↓
+Repository
+     ↓
+Persistência In-Memory
+```
+
+Com essa separação, cada camada possui uma responsabilidade clara.
+
+Por exemplo, caso a persistência em memória fosse substituída futuramente por um banco de dados, a principal alteração aconteceria na camada de repositório, preservando grande parte das regras existentes no `Service`.
+
+Essa organização também facilita:
+
+- manutenção;
+- leitura do código;
+- testes;
+- evolução da solução;
+- substituição de implementações.
+
+---
+
+## 2. Desafios e Soluções
+
+### Parte mais complexa
+
+Entre as Questões 2, 3 e 4, considero que a parte mais interessante em relação à lógica foi a **Questão 2 — identificação da maior sequência de números consecutivos em um array desordenado**.
+
+O desafio era encontrar a maior sequência sem depender simplesmente da ordenação completa do array.
+
+Exemplo:
+
+```text
+Entrada:
+
+[100, 4, 200, 1, 3, 2]
+
+Resultado:
+
+[1, 2, 3, 4]
+```
+
+A abordagem utilizada foi baseada em:
+
+```csharp
+HashSet<int>
+```
+
+O `HashSet` foi escolhido porque permite verificar rapidamente se determinado número está presente na coleção.
+
+### Estratégia utilizada
+
+Primeiramente, os números do array são inseridos em um `HashSet`.
+
+Em seguida, para cada número `n`, verifico se o número anterior existe:
+
+```text
+n - 1
+```
+
+Se o número anterior existir, significa que `n` não representa o início de uma nova sequência.
+
+Por exemplo:
+
+```text
+2
+```
+
+não deve iniciar uma sequência se:
+
+```text
+1
+```
+
+já estiver presente.
+
+Por outro lado, se `n - 1` não existir, aquele número pode representar o início de uma sequência.
+
+A partir dele, o algoritmo procura:
+
+```text
+n + 1
+n + 2
+n + 3
+...
+```
+
+até encontrar um número que não esteja presente no conjunto.
+
+### Por que utilizei HashSet?
+
+A principal vantagem é a busca eficiente por existência de elementos.
+
+Em vez de percorrer todo o array repetidamente procurando cada número, o `HashSet` permite fazer essas verificações com custo médio constante.
+
+Dessa forma, a solução possui complexidade média próxima de:
+
+```text
+O(n)
+```
+
+Outro benefício é que valores duplicados são naturalmente eliminados pelo `HashSet`.
+
+Por exemplo:
+
+```text
+[1, 2, 2, 3, 4]
+```
+
+passa a ser tratado como:
+
+```text
+[1, 2, 3, 4]
+```
+
+sem afetar a identificação da sequência.
+
+### Como resolvi e testei
+
+Para validar a solução, utilizei diferentes cenários.
+
+#### Sequência no meio de valores desordenados
+
+```text
+Entrada:
+
+[100, 4, 200, 1, 3, 2]
+
+Resultado esperado:
+
+[1, 2, 3, 4]
+```
+
+#### Valores duplicados
+
+```text
+Entrada:
+
+[1, 2, 2, 3, 4]
+
+Resultado esperado:
+
+[1, 2, 3, 4]
+```
+
+#### Sequência pequena
+
+```text
+Entrada:
+
+[10, 5, 6, 7, 20]
+
+Resultado esperado:
+
+[5, 6, 7]
+```
+
+#### Elementos sem sequência relevante
+
+```text
+Entrada:
+
+[10, 30, 50]
+
+Resultado:
+
+Uma sequência com apenas um elemento
+```
+
+Também acompanhei manualmente o comportamento do algoritmo para verificar se apenas os possíveis inícios de sequência realizavam a busca pelos próximos valores.
+
+Isso ajudou a evitar processamento desnecessário.
+
+---
+
+## 3. Autoavaliação e Trade-offs
+
+A implementação atual atende aos requisitos propostos pelo desafio, porém existem melhorias que eu aplicaria caso houvesse mais tempo disponível.
+
+### Testes Unitários
+
+Uma das primeiras melhorias seria adicionar projetos de testes utilizando, por exemplo:
+
+```text
+xUnit
+```
+
+Os testes poderiam validar principalmente:
+
+- criação de tarefas;
+- título vazio;
+- título com menos de 5 caracteres;
+- atualização de status;
+- conclusão de tarefa;
+- bloqueio de alteração de tarefa concluída;
+- filtro por período;
+- algoritmos das Questões 2, 3 e 4.
+
+Isso aumentaria a segurança durante futuras alterações.
+
+### Testes de Integração
+
+Também adicionaria testes de integração para validar os endpoints da Web API.
+
+Exemplos:
+
+```text
+POST /api/Tarefa
+GET /api/Tarefa
+PATCH /api/Tarefa/{id}/status
+GET /api/Tarefa/concluidas
+```
+
+Esses testes permitiriam validar não apenas as regras internas, mas também os códigos HTTP e contratos da API.
+
+### Banco de Dados Real
+
+A implementação atual utiliza persistência In-Memory, conforme permitido pelo desafio.
+
+O trade-off dessa abordagem é que os dados são perdidos sempre que a aplicação é encerrada.
+
+Em uma aplicação real, substituiria essa implementação por um banco de dados utilizando:
+
+```text
+Entity Framework Core
+```
+
+com um banco como:
+
+```text
+SQL Server
+PostgreSQL
+```
+
+Como a aplicação possui uma camada de Repository separada, essa evolução poderia ser feita sem alterar significativamente as demais camadas.
+
+### Tratamento Global de Exceções
+
+Atualmente parte das exceções é tratada diretamente nos Controllers.
+
+Uma melhoria seria utilizar um mecanismo global de tratamento de exceções, centralizando respostas como:
+
+```text
+400 Bad Request
+404 Not Found
+409 Conflict
+500 Internal Server Error
+```
+
+Isso reduziria duplicação de código nos Controllers.
+
+### Logs
+
+Também adicionaria logs estruturados para registrar:
+
+- criação de tarefas;
+- alteração de status;
+- erros inesperados;
+- falhas de validação;
+- informações importantes de execução.
+
+Em uma aplicação maior, ferramentas como Serilog poderiam ser consideradas.
+
+### Data e Hora
+
+A implementação utiliza:
+
+```csharp
+DateTime.Now
+```
+
+Em uma aplicação distribuída ou executada em diferentes regiões, seria interessante trabalhar com:
+
+```csharp
+DateTime.UtcNow
+```
+
+e converter a data apenas na camada de apresentação.
+
+Outra possibilidade seria abstrair a obtenção da data e hora através de um serviço, facilitando testes automatizados.
+
+### Paginação e Filtros
+
+Caso a quantidade de tarefas crescesse, a listagem completa deixaria de ser eficiente.
+
+Uma melhoria futura seria adicionar:
+
+- paginação;
+- ordenação;
+- filtros por status;
+- busca por título.
+
+### Configuração do Frontend
+
+Na implementação bônus, a URL da API poderia ser movida para uma variável de ambiente.
+
+Em vez de manter:
+
+```typescript
+const API_URL = "http://localhost:5000/api/tarefas";
+```
+
+poderia ser utilizada uma configuração como:
+
+```text
+VITE_API_URL
+```
+
+Isso facilitaria a execução em diferentes ambientes.
+
+### Docker
+
+Outra possível evolução seria criar arquivos Docker para frontend e backend, permitindo executar toda a solução de forma padronizada.
+
+---
+
+## 4. Pergunta de Checagem Técnica — Questão 2
+
+### O que acontece desde a entrada do array até a resposta final?
+
+Considere a entrada:
+
+```text
+[100, 4, 200, 1, 3, 2]
+```
+
+O processamento ocorre da seguinte forma.
+
+### Passo 1 — O array entra na função
+
+O método recebe a coleção desordenada:
+
+```text
+[100, 4, 200, 1, 3, 2]
+```
+
+Nesse momento ainda não sabemos qual é a maior sequência consecutiva.
+
+### Passo 2 — Criação do HashSet
+
+Os elementos são inseridos em um:
+
+```csharp
+HashSet<int>
+```
+
+Conceitualmente:
+
+```text
+{100, 4, 200, 1, 3, 2}
+```
+
+O objetivo é permitir verificações rápidas como:
+
+```text
+Existe o número 2?
+Existe o número 3?
+Existe o número 101?
+```
+
+### Passo 3 — Percorrer os números
+
+O algoritmo percorre os números do conjunto.
+
+Para cada número `n`, verifica:
+
+```text
+n - 1
+```
+
+A pergunta é:
+
+```text
+Existe um número anterior a ele?
+```
+
+Se existir, significa que aquele número pertence a uma sequência que começou antes e, portanto, não precisamos começar uma nova busca a partir dele.
+
+### Passo 4 — Identificar o início de uma sequência
+
+Considere:
+
+```text
+100
+```
+
+Verificamos:
+
+```text
+99 existe?
+```
+
+Não.
+
+Então:
+
+```text
+100
+```
+
+pode ser o início de uma sequência.
+
+Procuramos:
+
+```text
+101
+```
+
+Como não existe, a sequência termina:
+
+```text
+[100]
+```
+
+### Passo 5 — Avaliar o número 4
+
+Para:
+
+```text
+4
+```
+
+verificamos:
+
+```text
+3 existe?
+```
+
+Sim.
+
+Portanto, `4` não inicia uma nova sequência.
+
+Nenhuma busca adicional é necessária a partir dele.
+
+### Passo 6 — Avaliar o número 200
+
+Verificamos:
+
+```text
+199 existe?
+```
+
+Não.
+
+Então `200` inicia uma possível sequência.
+
+Procuramos:
+
+```text
+201
+```
+
+Não existe.
+
+Resultado:
+
+```text
+[200]
+```
+
+### Passo 7 — Avaliar o número 1
+
+Agora chegamos ao:
+
+```text
+1
+```
+
+Verificamos:
+
+```text
+0 existe?
+```
+
+Não.
+
+Portanto:
+
+```text
+1
+```
+
+é o início de uma sequência.
+
+Começamos então a procurar os valores seguintes:
+
+```text
+2 → existe
+3 → existe
+4 → existe
+5 → não existe
+```
+
+A sequência encontrada é:
+
+```text
+[1, 2, 3, 4]
+```
+
+Seu tamanho é:
+
+```text
+4
+```
+
+Como ela é maior do que as sequências encontradas anteriormente, passa a ser armazenada como a maior sequência.
+
+### Passo 8 — Avaliar 3 e 2
+
+Quando o algoritmo chega ao:
+
+```text
+3
+```
+
+verifica:
+
+```text
+2 existe?
+```
+
+Sim.
+
+Então `3` não inicia uma sequência.
+
+O mesmo ocorre com:
+
+```text
+2
+```
+
+pois:
+
+```text
+1 existe
+```
+
+Portanto, eles não precisam iniciar uma nova busca.
+
+### Passo 9 — Finalização
+
+Depois de percorrer todos os números, a maior sequência armazenada é:
+
+```text
+[1, 2, 3, 4]
+```
+
+Esse valor é retornado pelo método.
+
+O fluxo completo pode ser resumido como:
+
+```text
+Array desordenado
+        ↓
+Criar HashSet
+        ↓
+Percorrer os números
+        ↓
+Verificar se n - 1 existe
+        ↓
+     Existe?
+     /     \
+   Sim     Não
+    |       |
+Ignora    Início de sequência
+            ↓
+       Buscar n + 1
+            ↓
+       Buscar n + 2
+            ↓
+          ...
+            ↓
+Comparar tamanho com a maior sequência atual
+            ↓
+Atualizar maior sequência quando necessário
+            ↓
+Retornar maior sequência
+```
+
+Para o exemplo utilizado:
+
+```text
+Entrada:
+
+[100, 4, 200, 1, 3, 2]
+
+Saída:
+
+[1, 2, 3, 4]
+```
+
+A principal ideia da solução é evitar iniciar buscas a partir de números que já pertencem ao meio de uma sequência.
+
+Isso permite manter a solução eficiente e com complexidade média próxima de:
+
+```text
+O(n)
+```
